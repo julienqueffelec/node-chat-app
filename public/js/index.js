@@ -10,5 +10,24 @@ socket.on('disconnect', () => {
 });
 
 socket.on('newMessage', message => {
-  console.log('new message', message);
+  const formattedTime = moment(message.createdAt).format('h:mm a');
+  const li = jQuery('<li></li>');
+  li.text(`${message.from} ${formattedTime}: ${message.text}`);
+
+  jQuery('#messages').append(li);
+});
+
+jQuery('#message-form').on('submit', e => {
+  e.preventDefault();
+  const messageTxetbot = jQuery('#message');
+  socket.emit(
+    'createMessage',
+    {
+      from: 'User',
+      text: messageTxetbot.val(),
+    },
+    () => {
+      messageTxetbot.val('');
+    }
+  );
 });

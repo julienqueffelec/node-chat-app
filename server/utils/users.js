@@ -1,11 +1,3 @@
-[
-  {
-    id: '/#12poiajdspfoif',
-    name: 'Ju',
-    room: 'Muscu',
-  },
-];
-
 class Users {
   constructor() {
     this.users = [];
@@ -23,7 +15,6 @@ class Users {
     if (user) {
       this.users = this.users.filter(user => user.id !== id);
     }
-
     return user;
   }
 

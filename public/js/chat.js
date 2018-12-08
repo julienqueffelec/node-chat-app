@@ -1,6 +1,7 @@
 /* eslint no-use-before-define: 0 */
 
 const socket = io();
+let timeout = false;
 
 function scrollToBottom() {
   const messages = jQuery('#messages');
@@ -37,17 +38,17 @@ socket.on('disconnect', () => {
 });
 
 socket.on('updateUserList', users => {
-  const ol = jQuery('<ol></ol>');
+  const ul = jQuery('<ul></ul>');
 
   users.forEach(user => {
-    ol.append(jQuery('<li></li>').text(user));
+    ul.append(jQuery('<li></li>').text(user));
   });
 
-  jQuery('#users').html(ol);
+  jQuery('#users').html(ul);
 });
 
 socket.on('newMessage', message => {
-  const formattedTime = moment(message.createdAt).format('h:mm a');
+  const formattedTime = moment(message.createdAt).format('HH:mm');
   const template = jQuery('#message-template').html();
   const html = Mustache.render(template, {
     text: message.text,
@@ -57,6 +58,26 @@ socket.on('newMessage', message => {
 
   jQuery('#messages').append(html);
   scrollToBottom();
+});
+
+function timeoutFunction() {
+  const typing = false;
+  socket.emit('typing', false);
+}
+
+socket.on('typing', message => {
+  if (message) {
+    $('#isTyping').html(message);
+  } else {
+    $('#isTyping').html('');
+  }
+});
+
+jQuery('#message').keyup(() => {
+  const typing = true;
+  socket.emit('typing', 'typing...');
+  clearTimeout(timeout);
+  timeout = setTimeout(timeoutFunction, 2000);
 });
 
 jQuery('#message-form').on('submit', e => {

@@ -50,6 +50,15 @@ io.on('connection', socket => {
     callback();
   });
 
+  socket.on('typing', message => {
+    if (message) {
+      const user = users.getUser(socket.id);
+      socket.broadcast.emit('typing', `${user.name} is typing...`);
+    } else {
+      socket.broadcast.emit('typing');
+    }
+  });
+
   socket.on('disconnect', () => {
     const user = users.removeUser(socket.id);
 
